@@ -2,10 +2,6 @@ rm(list=ls())
 setwd("S:/POC/Data Science/Coursera/Getting and Cleaning Data/Assignment-Project")
 datasetRootPath = "S:/POC/Data Science/Coursera/Getting and Cleaning Data/Assignment-Project/UCI HAR Dataset/"
 
-setwd("E:/Coursera R/Getting and Cleaning Data/Assignment-Project")
-datasetRootPath = "E:/Coursera R//Getting and Cleaning Data/Assignment-Project/UCI HAR Dataset/"
-
-
 #lets get data
 tmpPath = paste(datasetRootPath, "test/subject_test.txt", sep="")
 subject_test = read.csv(file= tmpPath, header=F)
@@ -59,19 +55,18 @@ dsFinal = cbind(means,stds)
 
 #add other data to X_all as new columns
 names(y_all)[1] = "Activity"
-dsFinal$Activity = y_all
+head(y_all)
+dsFinal$Activity = y_all[,1]
 names(subject_all)[1] = "Subject"
-dsFinal$Subject = subject_all
+dsFinal$Subject = subject_all[,1]
 
-rm("X_all", "means", "stds", "y_all", "subject_all")
+#a little cleanup
+rm("X_all", "means", "stds", "y_all", "subject_all", "features", "activity_labels")
 
-summary(dsFinal)
+x = ncol(dsFinal) - 2 #not include Activity & Subject columns
+tidy = aggregate(dsFinal[1:x], by=dsFinal[c("Activity","Subject")], FUN=mean)
 
-aggregate(dsFinal["fBodyBodyGyroMag-std()"], by=dsFinal[c("Activity","Subject")], FUN=mean)
-
-dsFinal["fBodyBodyGyroMag-std()"]
-dsFinal[c("Activity","Subject")]
-
+write.table(tidy, file="tidy_dataset.txt", row.name=FALSE)
 
 
 
